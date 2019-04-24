@@ -194,33 +194,16 @@ class Spectrum:
         save = [self.filename, ".tiff"]
         plt.savefig("".join(save), dpi=100, bbox_inches='tight', format="tiff")
 
-# SpecData.return_xaxis
+    def write_txt(self):
+        if self.spec_type == "HYSCORE":
+            savefile= "proc_" + os.path.basename(self.filename)
+            savefile=savefile.replace(".DTA",".txt")
+            np.savetxt(savefile,np.column_stack((self.spect.xdata, self.spect.ydata, self.spect.zdata)))
+    
+        elif self.spec_type == "ENDOR":
+            savefile= "proc_" + os.path.basename(self.filename)
+            savefile=savefile.replace(".DTA",".txt")
+            np.savetxt(savefile,np.column_stack((self.spect.return_axis('x'), self.spect.smoothed)))
+
 #############################################################################
 #############################################################################
-# Executed Code
-
-def choose_files():
-
-    """choose files from file dialog box;
-    displays Bruker .DTA files"""
-
-    root = tk.Tk()
-    root.withdraw()
-    filenamelist = filedialog.askopenfilenames(
-        parent=root,
-        defaultextension='.DTA',
-        title="Select Data files",
-        filetypes=[('Bruker', '.DTA'), ('all', '.*')])
-    return filenamelist
-
-FILENAMELIST = choose_files()
-THE_SPECTRUM = list()
-
-for j in range(0, len(FILENAMELIST)):
-    THE_SPECTRUM.append(Spectrum(FILENAMELIST[j]))
-
-    if THE_SPECTRUM[j].spec_type == "ENDOR":
-        THE_SPECTRUM[j].lineplot()
-
-    elif THE_SPECTRUM[j].spec_type == "HYSCORE":
-        THE_SPECTRUM[j].contour_plot()
